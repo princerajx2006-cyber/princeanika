@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Princeanika — Buddhist Text Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg: #080705;
+  --panel: #0f0e0a;
+  --card: #141210;
+  --border: #252018;
+  --gold: #c9a84c;
+  --amber: #e8b96a;
+  --muted: #5a5040;
+  --text: #e0d8c8;
+  --dim: #8a7d68;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Pro', serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* TOP BAR */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.logo-wheel {
+  font-size: 1.5rem;
+  color: var(--gold);
+  filter: drop-shadow(0 0 8px rgba(201,168,76,0.5));
+}
+
+.logo-text {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+}
+
+.logo-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 1px;
+}
+
+/* Search */
+.search-area {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  min-width: 200px;
+}
+
+.search-input {
+  flex: 1;
+  background: var(--card);
+  border: 1px solid var(--border);
+  outline: none;
+  padding: 8px 14px;
+  color: var(--text);
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  border-radius: 2px;
+  transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--gold); }
+.search-input::placeholder { color: var(--muted); }
+
+.search-btn {
+  background: var(--gold);
+  color: #080705;
+  border: none;
+  padding: 8px 20px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.search-btn:hover { background: var(--amber); }
+
+/* Source tabs */
+.tabs-bar {
+  display: flex;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+.tabs-bar::-webkit-scrollbar { display: none; }
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.tab:hover { color: var(--dim); }
+.tab.active { color: var(--amber); border-bottom-color: var(--gold); }
+
+.tab-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+.tab-all {
+  margin-left: auto;
+  color: var(--gold);
+  border-left: 1px solid var(--border);
+}
+
+/* Main area */
+.main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.source-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 2px;
+}
+.source-item:hover { background: rgba(255,255,255,0.03); }
+.source-item.active { background: rgba(201,168,76,0.06); }
+
+.source-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.source-name {
+  font-size: 0.88rem;
+  color: var(--dim);
+  flex: 1;
+}
+.source-item.active .source-name { color: var(--text); }
+
+.source-toggle {
+  width: 26px; height: 14px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  position: relative;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.source-toggle.on { border-color: var(--gold); background: rgba(201,168,76,0.2); }
+.source-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: all 0.2s;
+}
+.source-toggle.on::after { left: 14px; background: var(--gold); }
+
+.quick-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--muted);
+  cursor: pointer;
+  margin: 2px;
+  transition: all 0.15s;
+}
+.quick-tag:hover { border-color: var(--gold); color: var(--amber); }
+
+/* Content area */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Grid / single view */
+.iframe-container {
+  flex: 1;
+  display: grid;
+  overflow: hidden;
+  gap: 2px;
+  background: var(--border);
+}
+
+.iframe-container.layout-1 { grid-template-columns: 1fr; }
+.iframe-container.layout-2 { grid-template-columns: 1fr 1fr; }
+.iframe-container.layout-3 { grid-template-columns: 1fr 1fr 1fr; }
+.iframe-container.layout-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.iframe-container.layout-5 { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
+
+.iframe-pane {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.iframe-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.iframe-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.iframe-open {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+.iframe-open:hover { color: var(--amber); border-color: var(--gold); }
+
+iframe {
+  flex: 1;
+  border: none;
+  background: #fff;
+}
+
+/* Welcome screen */
+.welcome {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  background: var(--bg);
+}
+
+.welcome-wheel {
+  font-size: 4rem;
+  color: var(--gold);
+  filter: drop-shadow(0 0 30px rgba(201,168,76,0.3));
+  margin-bottom: 20px;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.welcome h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--amber);
+  letter-spacing: 0.12em;
+  margin-bottom: 10px;
+}
+
+.welcome p {
+  color: var(--muted);
+  font-size: 1rem;
+  font-style: italic;
+  margin-bottom: 30px;
+  max-width: 400px;
+  line-height: 1.7;
+}
+
+.welcome-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 500px;
+}
+
+/* Layout controls */
+.layout-controls {
+  display: flex;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+
+.layout-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-right: 6px;
+}
+
+.layout-btn {
+  padding: 3px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+}
+.layout-btn:hover, .layout-btn.active { border-color: var(--gold); color: var(--amber); background: rgba(201,168,76,0.05); }
+
+/* Status bar */
+.statusbar {
+  padding: 4px 16px;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.status-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.status-sources {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.status-src {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--muted);
+}
+
+@media (max-width: 700px) {
+  .sidebar { display: none; }
+  .iframe-container.layout-2,
+  .iframe-container.layout-3,
+  .iframe-container.layout-4,
+  .iframe-container.layout-5 {
+    grid-template-columns: 1fr;
+    grid-template-rows: unset;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">
+    <span class="logo-wheel">☸</span>
+    <div>
+      <span class="logo-text">Princeanika</span>
+      <span class="logo-sub">Buddhist Text Explorer</span>
+    </div>
+  </div>
+  <div class="search-area">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search Buddhist texts… (e.g. Nirvana, Metta, Dhammapada)" />
+    <button class="search-btn" onclick="doSearch()">Search All</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-bar" id="tabsBar">
+  <button class="tab active" onclick="setTab('welcome')" id="tab-welcome">
+    <span class="tab-dot"></span> Home
+  </button>
+  <button class="tab tab-all" onclick="doSearch()" id="tab-all">
+    ☸ Search All Sources
+  </button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Sources</div>
+      <div id="sourceList"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Quick Search</div>
+      <div>
+        <span class="quick-tag" onclick="quickSearch('Nirvana')">Nirvana</span>
+        <span class="quick-tag" onclick="quickSearch('Four Noble Truths')">Four Noble Truths</span>
+        <span class="quick-tag" onclick="quickSearch('Bodhisattva')">Bodhisattva</span>
+        <span class="quick-tag" onclick="quickSearch('Dhammapada')">Dhammapada</span>
+        <span class="quick-tag" onclick="quickSearch('Metta')">Metta</span>
+        <span class="quick-tag" onclick="quickSearch('Karma')">Karma</span>
+        <span class="quick-tag" onclick="quickSearch('Samadhi')">Samadhi</span>
+        <span class="quick-tag" onclick="quickSearch('Anapanasati')">Anapanasati</span>
+        <span class="quick-tag" onclick="quickSearch('Prajnaparamita')">Prajnaparamita</span>
+        <span class="quick-tag" onclick="quickSearch('Anatta')">Anatta</span>
+        <span class="quick-tag" onclick="quickSearch('Samsara')">Samsara</span>
+        <span class="quick-tag" onclick="quickSearch('Theravada')">Theravada</span>
+        <span class="quick-tag" onclick="quickSearch('Madhyamaka')">Madhyamaka</span>
+        <span class="quick-tag" onclick="quickSearch('Dependent Origination')">Dependent Origination</span>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Layout</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <button class="layout-btn" onclick="setLayout(1)">1</button>
+        <button class="layout-btn active" onclick="setLayout(2)">2</button>
+        <button class="layout-btn" onclick="setLayout(3)">3</button>
+        <button class="layout-btn" onclick="setLayout(4)">4</button>
+        <button class="layout-btn" onclick="setLayout(5)">5</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- Welcome -->
+    <div class="welcome" id="welcomeScreen">
+      <div class="welcome-wheel">☸</div>
+      <h2>Princeanika</h2>
+      <p>Search across 5 major Buddhist text libraries simultaneously. Type a term above or click a topic below.</p>
+      <div class="welcome-tags">
+        <span class="quick-tag" onclick="quickSearch('Nirvana')">Nirvana</span>
+        <span class="quick-tag" onclick="quickSearch('Four Noble Truths')">Four Noble Truths</span>
+        <span class="quick-tag" onclick="quickSearch('Bodhisattva')">Bodhisattva</span>
+        <span class="quick-tag" onclick="quickSearch('Dhammapada')">Dhammapada</span>
+        <span class="quick-tag" onclick="quickSearch('Metta')">Metta</span>
+        <span class="quick-tag" onclick="quickSearch('Karma')">Karma</span>
+        <span class="quick-tag" onclick="quickSearch('Samadhi')">Samadhi</span>
+        <span class="quick-tag" onclick="quickSearch('Anapanasati')">Anapanasati</span>
+        <span class="quick-tag" onclick="quickSearch('Prajnaparamita')">Prajnaparamita</span>
+        <span class="quick-tag" onclick="quickSearch('Theravada')">Theravada</span>
+        <span class="quick-tag" onclick="quickSearch('Dependent Origination')">Dependent Origination</span>
+        <span class="quick-tag" onclick="quickSearch('Anatta')">Anatta</span>
+      </div>
+    </div>
+
+    <!-- Layout controls (hidden until search) -->
+    <div class="layout-controls" id="layoutControls" style="display:none">
+      <span class="layout-label">View:</span>
+      <button class="layout-btn" onclick="setLayout(1)">1 Pane</button>
+      <button class="layout-btn active" onclick="setLayout(2)" id="lbtn2">2 Panes</button>
+      <button class="layout-btn" onclick="setLayout(3)">3 Panes</button>
+      <button class="layout-btn" onclick="setLayout(4)">4 Panes</button>
+      <button class="layout-btn" onclick="setLayout(5)">All 5</button>
+    </div>
+
+    <!-- Iframes grid -->
+    <div class="iframe-container layout-2" id="iframeGrid" style="display:none"></div>
+
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <span class="status-text" id="statusText">☸ Ready — Search Buddhist texts across 5 sources</span>
+  <div class="status-sources" id="statusSources"></div>
+</div>
+
+<script>
+const SOURCES = [
+  {
+    id: 'wl',
+    name: 'Wisdomlib',
+    short: 'WL',
+    color: '#d4874a',
+    url: q => `https://www.wisdomlib.org/search?q=${encodeURIComponent(q)}&type=text`,
+    home: 'https://www.wisdomlib.org',
+    desc: 'Buddhist, Hindu, Jain texts'
+  },
+  {
+    id: 'sc',
+    name: 'SuttaCentral',
+    short: 'SC',
+    color: '#6aabbd',
+    url: q => `https://suttacentral.net/search?query=${encodeURIComponent(q)}&lang=en`,
+    home: 'https://suttacentral.net',
+    desc: 'Pali Canon & parallels'
+  },
+  {
+    id: 'k84',
+    name: '84000',
+    short: '84K',
+    color: '#a87fc1',
+    url: q => `https://84000.co/search?query=${encodeURIComponent(q)}`,
+    home: 'https://84000.co',
+    desc: 'Tibetan Buddhist canon'
+  },
+  {
+    id: 'ati',
+    name: 'Access to Insight',
+    short: 'ATI',
+    color: '#7db87d',
+    url: q => `https://www.accesstoinsight.org/cgi-bin/search.pl?query=${encodeURIComponent(q)}&method=any`,
+    home: 'https://www.accesstoinsight.org',
+    desc: 'Theravada scriptures'
+  },
+  {
+    id: 'cbeta',
+    name: 'CBETA',
+    short: 'CB',
+    color: '#c17070',
+    url: q => `https://cbetaonline.dila.edu.tw/zh/?q=${encodeURIComponent(q)}`,
+    home: 'https://cbetaonline.dila.edu.tw',
+    desc: 'Chinese Buddhist canon'
+  }
+];
+
+let enabled = { wl: true, sc: true, k84: true, ati: true, cbeta: true };
+let currentLayout = 2;
+let currentQuery = '';
+
+// Build sidebar source list
+function buildSidebar() {
+  const list = document.getElementById('sourceList');
+  list.innerHTML = '';
+  SOURCES.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'source-item' + (enabled[s.id] ? ' active' : '');
+    item.id = 'src-' + s.id;
+    item.innerHTML = `
+      <span class="source-dot" style="background:${s.color}"></span>
+      <span class="source-name">${s.name}</span>
+      <span class="source-toggle ${enabled[s.id] ? 'on' : ''}" id="tog-${s.id}"></span>
+    `;
+    item.onclick = () => toggleSource(s.id);
+    list.appendChild(item);
+  });
+  buildStatusSources();
+}
+
+function toggleSource(id) {
+  enabled[id] = !enabled[id];
+  document.getElementById('src-' + id).classList.toggle('active', enabled[id]);
+  document.getElementById('tog-' + id).classList.toggle('on', enabled[id]);
+  buildStatusSources();
+  if (currentQuery) renderIframes(currentQuery);
+}
+
+function buildStatusSources() {
+  const el = document.getElementById('statusSources');
+  el.innerHTML = SOURCES.map(s => `
+    <span class="status-src">
+      <span style="width:5px;height:5px;border-radius:50%;background:${enabled[s.id] ? s.color : '#333'};display:inline-block"></span>
+      ${s.short}
+    </span>
+  `).join('');
+}
+
+function setLayout(n) {
+  currentLayout = n;
+  document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+  const grid = document.getElementById('iframeGrid');
+  grid.className = `iframe-container layout-${n}`;
+  if (currentQuery) renderIframes(currentQuery);
+}
+
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  quickSearch(q);
+}
+
+function quickSearch(q) {
+  document.getElementById('searchInput').value = q;
+  currentQuery = q;
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('layoutControls').style.display = 'flex';
+  document.getElementById('iframeGrid').style.display = 'grid';
+  document.getElementById('statusText').textContent = `☸ Searching: "${q}" — ${Object.values(enabled).filter(Boolean).length} sources`;
+  renderIframes(q);
+}
+
+function renderIframes(q) {
+  const activeSources = SOURCES.filter(s => enabled[s.id]);
+  const show = activeSources.slice(0, currentLayout);
+  const grid = document.getElementById('iframeGrid');
+  grid.innerHTML = '';
+
+  show.forEach(s => {
+    const pane = document.createElement('div');
+    pane.className = 'iframe-pane';
+    pane.innerHTML = `
+      <div class="iframe-header">
+        <span class="tab-dot" style="background:${s.color}"></span>
+        <span class="iframe-title" style="color:${s.color}">${s.name}</span>
+        <span style="font-family:monospace;font-size:0.55rem;color:var(--muted);margin-right:8px;font-style:italic">${s.desc}</span>
+        <a href="${s.url(q)}" target="_blank" class="iframe-open">Open ↗</a>
+      </div>
+      <iframe src="${s.url(q)}" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+    `;
+    grid.appendChild(pane);
+  });
+
+  // Update layout class
+  grid.className = `iframe-container layout-${Math.min(show.length, currentLayout)}`;
+}
+
+function setTab(id) {
+  if (id === 'welcome') {
+    document.getElementById('welcomeScreen').style.display = 'flex';
+    document.getElementById('layoutControls').style.display = 'none';
+    document.getElementById('iframeGrid').style.display = 'none';
+    currentQuery = '';
+  }
+}
+
+// Enter key
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+
+// Init
+buildSidebar();
+</script>
+</body>
+</html>
